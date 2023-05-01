@@ -34,6 +34,7 @@ void Push(int n)
 
 int Pop()
 {
+
 	// if the stack is empty, give the Push( ) function a chance to put something on the stack:
 	int t = 0;
 	while (StackPtr < 0 && t < TIMEOUT)
@@ -47,22 +48,43 @@ int Pop()
 	StackPtr--;
 
 	WasPopped[n] = true;
+
 	return n;
 }
 
 void PushAll()
 {
+	if (USE_MUTEX)
+	{
+		omp_set_lock(&Lock);
+	}
+
 	for (int i = 0; i < NUMN; i++)
 	{
 		Push(i);
+	}
+
+	if (USE_MUTEX)
+	{
+		omp_unset_lock(&Lock);
 	}
 }
 
 void PopAll()
 {
+	if (USE_MUTEX)
+	{
+		omp_set_lock(&Lock);
+	}
+
 	for (int i = 0; i < NUMN; i++)
 	{
 		int n = Pop();
+	}
+	
+	if (USE_MUTEX)
+	{
+		omp_unset_lock(&Lock);
 	}
 }
 
